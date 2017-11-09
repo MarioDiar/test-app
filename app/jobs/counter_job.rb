@@ -1,17 +1,17 @@
 class CounterJob < ApplicationJob
+
   queue_as :default
 
   def perform(*args)
-    puts "Resque Job being performed"
+    puts "Resque job: performing."
+    count = Count.first()
 
-    @count = Count.first()
-
-    if @count.nil?
-      @count = Count.create(count: 1)
+    if count.nil?
+      count = Count.create(count: 1)
     else
-      @count.count += 1
-      @count.save
+      count.count += 1
+      count.save
     end
-
+    puts "Resque job: done."
   end
 end

@@ -1,0 +1,32 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f ../docker/docker-compose.yml
+    kompose.version: 1.4.0 (c7964e7)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: resque
+  name: resque
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: resque
+    spec:
+      containers:
+      - args:
+        - bundle
+        - exec
+        - rake
+        - environment
+        - resque:work
+        - QUEUE=default
+        image: mariological/testapp:v2
+        name: resque
+        resources: {}
+      restartPolicy: Always
+status: {}

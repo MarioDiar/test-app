@@ -1,0 +1,35 @@
+version: '2'
+
+services:
+  app:
+    image: mariological/testapp:v2
+    command: bundle exec rails server -p 3000 -b '0.0.0.0'
+    links:
+      - redis
+      - postgres
+    ports:
+      - "3000"
+
+  postgres:
+    image: postgres:9.4
+    ports:
+      - "5432"
+
+  redis:
+    image: redis:3.0.5
+    ports:
+      - "6379:6379"
+
+  resque:
+    image: mariological/testapp:v2
+    command: bundle exec rake environment resque:work QUEUE=default
+    links:
+      - redis
+      - postgres
+
+  webnginx:
+    image: mariological/testnginx
+    links:
+      - app
+    ports:
+      - "80:80"
