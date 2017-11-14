@@ -2,7 +2,10 @@ version: '2'
 
 services:
   app:
-    image: mariological/testapp:v3
+    # image: mariological/testapp:v3
+    build:
+      context: ../../
+      dockerfile: config/docker/testapp.Dockerfile
     command: bundle exec rails server -p 3000 -b '0.0.0.0'
     links:
       - redis
@@ -21,7 +24,10 @@ services:
       - "6379:6379"
 
   resque:
-    image: mariological/testapp:v3
+    # image: mariological/testapp:v3
+    build:
+      context: ../../
+      dockerfile: config/docker/testapp.Dockerfile
     command: bundle exec rake environment resque:work QUEUE=default
     links:
       - redis

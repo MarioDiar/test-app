@@ -25,7 +25,5 @@ COPY config/nginx.conf /tmp/docker_example.nginx
 #RUN rm -rf /etc/nginx/sites-available/default
 #ADD config/nginx.conf /etc/nginx/sites-enabled/nginx.conf
  
-EXPOSE 80
- 
 # Use the "exec" form of CMD so Nginx shuts down gracefully on SIGTERM (i.e. `docker stop`)
 CMD [ "nginx", "-g", "daemon off;" ]

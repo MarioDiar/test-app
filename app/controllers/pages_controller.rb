@@ -1,4 +1,7 @@
 class PagesController < ApplicationController
+
+  before_action -> { logger.info request.user_agent }
+
   def home
     @visits = Count.first().nil? ? 0 : Count.first().count
   end
@@ -12,3 +15,4 @@ class PagesController < ApplicationController
     render plain: "Ok"
   end
 end
+
