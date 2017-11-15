@@ -1,8 +1,50 @@
+substitutions:
+  _GS_BUCKET: ''
+
 steps:
-- name: 'gcr.io/cloud-builders/docker'
-  args: [ 'build', '-t', 'gcr.io/$PROJECT_ID/testapp','-f', 'config/docker/testapp.Dockerfile', '.']
+- id:   'retrieve-cache'
+  name: 'gcr.io/cloud-builders/docker'
+  args: ['pull', 'gcr.io/$PROJECT_ID/testapp']
+
+- id:   'build-master'
+  name: 'gcr.io/cloud-builders/docker'
+  args:
+  - 'build'
+  - '--cache-from'
+  - 'gcr.io/$PROJECT_ID/testapp'
+  - '-t'
+  - 'gcr.io/$PROJECT_ID/testapp'
+  - '-f'
+  - 'config/docker/testapp.Dockerfile'
+  - '.'
+
+- id:   'asset-precompile'
+  name: 'gcr.io/cloud-builders/docker'
+  args: ['run', '-v', '/workspace/assets-output:/var/www/testapp/public/assets', 'gcr.io/$PROJECT_ID/testapp', 'bundle', 'exec', 'rake', 'assets:precompile']
+
+
+- id:   'upload-asset'
+  name: 'gcr.io/cloud-builders/gsutil'
+  args: ['cp', '-r', '/workspace/assets-output/*', '$_GS_BUCKET']
+
+
+- id:   'copy-to-public'
+  name: 'gcr.io/cloud-builders/gsutil'
+  args: ['cp', '-r', '$_GS_BUCKET/*', '/workspace/public']
+
+
+- id:   'build-nginx'
+  name: 'gcr.io/cloud-builders/docker'
+  args:
+  - 'build'
+  - '--cache-from'
+  - 'gcr.io/$PROJECT_ID/nginx-assets'
+  - '-t'
+  - 'gcr.io/$PROJECT_ID/nginx-assets'
+  - '-f'
+  - 'config/docker/nginx-assets.Dockerfile'
+  - '.'
+
 images:
 - 'gcr.io/$PROJECT_ID/testapp'
-tags:
-- "test"
-- "tag2"
+- 'gcr.io/$PROJECT_ID/nginx-assets'

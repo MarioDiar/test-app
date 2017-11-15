@@ -32,5 +32,4 @@ ENV RAILS_ENV production
 # Copy the main application.
 COPY . ./
 
-# Precompiling assets
 RUN bundle exec rake assets:precompile
