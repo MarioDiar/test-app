@@ -20,5 +20,4 @@ test:
   database: test_app_test
 
 production:
-  <<: *default
-  database: test_app_devel
+  url: postgresql://<%= ENV.fetch('POSTGRES_DB_USER') %>:<%= ENV.fetch('POSTGRES_DB_PASSWORD') %>@<%= ENV.fetch('POSTGRES_DB_HOST') %>/testapp_prod
